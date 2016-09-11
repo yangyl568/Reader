@@ -3,6 +3,8 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="bookmark" href="favicon.ico" type="image/x-icon"　/>
 		<title></title>
 		<link rel="stylesheet" href="css/reset.css" />
 		<link rel="stylesheet" href="css/main.css" />
@@ -31,20 +33,13 @@
 		<!--主体内容-->
 		<div class="container">
 			<div class="Content">
-				<h4 class="Title">第004章 绝处缝生</h4>
-				<p>从朱莉家出来后，盛夏在招待所将就了一夜。闺蜜小雅想让盛夏住她家去，但盛夏没同意。</p>
-				<p>小雅和她男朋友挤在一个二十多平的一室户里，就算能挪出地方来给她，两个女的，一个男的，也太不方便。</p>
-				<p>这家超市是西林本土的一家小型连锁店。店面铺得广，员工又多，提供住的地方，所以工资不高。</p>
-				<p>盛夏以前也想过要住超市宿舍。可是……就一个一百平的仓库，还要隔开男女宿舍，洗澡间，卫生间，厨房，饭厅。四个女工，七个男工挤在一处。</p>
-				<p>这种地方，人多，又杂又乱，她一个刚毕业的小女生，很不安全。何况，店里的主管是个出了名的老色鬼。以往就对几个女工动过坏心思。之前不在这里住，没觉得有多大不了。但是现在，朝夕见面，他时不时调戏刁难，就觉得难堪了许多。</p>
-				<p>这种地方，人多，又杂又乱，她一个刚毕业的小女生，很不安全。何况，店里的主管是个出了名的老色鬼。以往就对几个女工动过坏心思。之前不在这里住，没觉得有多大不了。但是现在，朝夕见面，他时不时调戏刁难，就觉得难堪了许多。</p>
-				<p>这种地方，人多，又杂又乱，她一个刚毕业的小女生，很不安全。何况，店里的主管是个出了名的老色鬼。以往就对几个女工动过坏心思。之前不在这里住，没觉得有多大不了。但是现在，朝夕见面，他时不时调戏刁难，就觉得难堪了许多。</p>
-				<p>这种地方，人多，又杂又乱，她一个刚毕业的小女生，很不安全。何况，店里的主管是个出了名的老色鬼。以往就对几个女工动过坏心思。之前不在这里住，没觉得有多大不了。但是现在，朝夕见面，他时不时调戏刁难，就觉得难堪了许多。</p>
-				<div class="page_btn">
-					<button class="btn_prev">上一页</button>
-					<button class="btn_next">下一页</button>
-				</div>
+				
+				
 			</div>
+			<div class="page_btn">
+					<button class="btn-prev" id="btn_prev">上一页</button>
+					<button class="btn-next" id="btn_next">下一页</button>
+				</div>
 		</div>
 
 		<!--底部导航栏    -->
@@ -102,14 +97,31 @@
 		<script type="text/javascript" src="js/jquery.jsonp.js" ></script>
 		<script type="text/javascript" src="js/jquery.base64.js" ></script>
 		<script>
-		$(document).ready(function(){
-			
-			var readerm=ReaderModel();
-			readerm.init();
-			EventHandler();
-			
+		var Dom={
+					font_Pop: $("#font_Pop"),
+					nav_top:$("#nav_top"),
+					nav_bottom:$("#nav_bottom"),
+					icon_Aa:$("#icon_Aa"),
+					body:$("body"),
+					win:$(window),
+					icon_yejian:$("#icon_yejian"),
+					btn_Big:$("#btn_Big"),
+					btn_Small:$("#btn_Small")
+			}
+		
+		//数据层的初始化
+		var RootContainer = $('.Content');
+		var readerUIFrame = ReaderBaseFrame(RootContainer);
+		
+		var readerm=ReaderModel();
+		readerm.init(function(data){
+			readerUIFrame(data);
 		});
-		var Util=(function(){
+		//业务事件的初始化
+		EventHandler();
+		
+		
+		var Util=(function(){//封装的本地存储和json数据解析
 				var prefix = 'function_reader_';
 				var StorageGetter = function(key){
 					return localStorage.getItem(prefix + key);
@@ -125,36 +137,24 @@
 						callback:'duokan_fiction_chapter',
 						success:function(result){
 							//获取加密信息，解码、转json
-							debugger;
 							var data=$.base64.decode(result);
 							var json=decodeURIComponent(escape(data));
 							callback(json);
 						}
 					})
 				}
-				
 				return{
 					getJsonp:getJsonp,
 					StorageGetter:StorageGetter,
 					StorageSetter:StorageSetter
 				}
 			})();
-			var Dom={
-					font_Pop: $("#font_Pop"),
-					nav_top:$("#nav_top"),
-					nav_bottom:$("#nav_bottom"),
-					icon_Aa:$("#icon_Aa"),
-					body:$("body"),
-					win:$(window),
-					icon_yejian:$("#icon_yejian"),
-					btn_Big:$("#btn_Big"),
-					btn_Small:$("#btn_Small")
-			}
-		//背景颜色
+			
+		//背景颜色 存储记录
 		var bkgroundcolor=Util.StorageGetter("bkgroundcolor");
 		var bkCurrColor=Util.StorageGetter("bkgroundcolor");
 		Dom.body.css('background-color',bkgroundcolor);
-		//字号大小 设置
+		//字号大小 设置存储记录
 		var InitFontSize;
 		InitFontSize=Util.StorageGetter("font_size");
 		InitFontSize= parseInt(InitFontSize);
@@ -163,25 +163,50 @@
 			}
 		$("p").css('font-size',InitFontSize);
 		
+			
+		function ReaderBaseFrame(container){//UI渲染层
+			
+			function ParseChapterData(jsonData){//生成要展示的 html文本
+				var jsonObj=JSON.parse(jsonData);
+				var html="<h4>" + jsonObj.t + "</h4>";
+				for (var i=0; i<jsonObj.p.length; i++) {
+					html+="<p>"+jsonObj.p[i]+"</p>";
+				}
+				return html;
+			}
+			
+			return function (data){//返回 渲染后的结果data：解密后的json数据
+				container.html(ParseChapterData(data));
+			}
+		}
+		
 		function ReaderModel(){//数据交互层
 			//todo 获取章节信息
 			var Chapter_id;
-			var init=function(){//初始化 信息
+			var ChapterTotal;
+			var init=function(Uicallback){//初始化 信息
 				getFictionInfo(function(){
-					getCurChaptInfo(Chapter_id,function(){
+					getCurChaptInfo(Chapter_id,function(data){
 						//todo 
-						
+						Uicallback&&Uicallback(data);
 					})
 				})
-			}
-			var getFictionInfo=function(callback){
+			};
+			
+			var getFictionInfo=function(callback){//获取所有章节摘要信息
 				$.get('data/chapter.json',function(data){
 					//todo 获取章节信息之后的回调
-					Chapter_id=data.chapters[1].chapter_id;
+					Chapter_id = parseInt(Util.StorageGetter("ChapterId"));
+					if (Chapter_id == null) {
+						Chapter_id=data.chapters[1].Chapter_id;
+					}
+					//Chapter_id=data.chapters[1].chapter_id;
+					ChapterTotal=data.chapters.length;
 					callback&&callback();
 				},'json');
-			}
-			var getCurChaptInfo=function(Chapter_id,data,callback){
+			};
+			
+			var getCurChaptInfo=function(Chapter_id,callback){//获取当前Chapter_id章节详细信息
 				$.get('data/data'+Chapter_id+'.json',function(data){
 					//todo 获取详细信息之后的回调
 					if(data.result == 0){
@@ -191,9 +216,40 @@
 						});//通过url来获取加密信息，并解密
 					}
 				},'json');
-			}
+			};
+			
+			var prveChapter=function(){//上一页				
+				Chapter_id=parseInt(Chapter_id);
+				if(Chapter_id == 0){
+					return;
+				}
+				Chapter_id -= 1;
+				//调用方法获取 Chapter_id章节信息
+				getCurChaptInfo(Chapter_id,function(data){
+					//console.log(data);
+					readerUIFrame(data);//渲染html数据
+				});
+				Util.StorageSetter("ChapterId",Chapter_id);
+			};
+			var nextChapter=function(){//下一页
+				
+				Chapter_id=parseInt(Chapter_id);
+				if(Chapter_id == ChapterTotal){
+					return;
+				}
+				Chapter_id += 1;
+				//调用方法获取 Chapter_id章节信息
+				getCurChaptInfo(Chapter_id,function(data){
+					//console.log(data);
+					readerUIFrame(data);
+				});
+				Util.StorageSetter("ChapterId",Chapter_id);
+			};
+			
 			return{
-				init:init
+				init:init,
+				prveChapter:prveChapter,
+				nextChapter:nextChapter
 			}
 		}
 		
@@ -296,6 +352,14 @@
 						break;
 				}
 			Util.StorageSetter("bkgroundcolor",Dom.body.css('background-color'));
+			});
+			
+			$("#btn_prev").click(function(){
+				readerm.prveChapter();
+			});
+			
+			$("#btn_next").click(function(){
+				readerm.nextChapter();
 			});
 		}
 		</script>

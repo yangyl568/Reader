@@ -29,8 +29,8 @@ p {
 	padding-bottom: 3em;
 }
 
-.btn_prev,
-.btn_next {
+.btn-prev,
+.btn-next {
 	width: 49%;
 	text-align: center;
 	height: 40px;
