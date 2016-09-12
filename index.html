@@ -197,8 +197,8 @@
 				$.get('data/chapter.json',function(data){
 					//todo 获取章节信息之后的回调
 					Chapter_id = parseInt(Util.StorageGetter("ChapterId"));
-					if (Chapter_id == null) {
-						Chapter_id=data.chapters[1].Chapter_id;
+					if (Chapter_id == null|| !Chapter_id) {
+						Chapter_id=data.chapters[1].chapter_id;
 					}
 					//Chapter_id=data.chapters[1].chapter_id;
 					ChapterTotal=data.chapters.length;
